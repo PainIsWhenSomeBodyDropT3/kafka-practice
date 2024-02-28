@@ -9,7 +9,7 @@ import (
 
 var topics = []string{"1"}
 
-const MIN_COMMIT_COUNT = 5
+const MIN_COMMIT_COUNT = 10
 
 func main() {
 	c, err := getConsumer()
@@ -34,19 +34,33 @@ func consumeMessages(consumer *kafka.Consumer) {
 		ev := consumer.Poll(100)
 		switch e := ev.(type) {
 		case *kafka.Message:
-			msg_count += 1
-			if msg_count%MIN_COMMIT_COUNT == 0 {
-				_, err := consumer.Commit()
-				if err == nil {
-					fmt.Printf("%% Committing offset\n")
-				}
-			}
-			fmt.Printf("%%  Message on %s: %s\n",
-				e.TopicPartition, string(e.Value))
+			processMessage(consumer, e, &msg_count)
 		case kafka.PartitionEOF:
 			fmt.Printf("%% Reached %v\n", e)
 		case kafka.Error:
 			fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
 		}
 	}
+}
+
+func processMessage(consumer *kafka.Consumer, msg *kafka.Message, messageCount *int) {
+	_, err := consumer.StoreOffsets([]kafka.TopicPartition{{
+		Topic:     msg.TopicPartition.Topic,
+		Partition: msg.TopicPartition.Partition,
+		Offset:    msg.TopicPartition.Offset + 1,
+	}})
+	if err != nil {
+		fmt.Printf("%% Error storing offset: %v\n", err)
+	}
+	*messageCount += 1
+	if *messageCount%MIN_COMMIT_COUNT == 0 {
+		_, err := consumer.Commit()
+		if err == nil {
+			fmt.Printf("%% Committing offset\n")
+		} else {
+			fmt.Printf("%% Error commiting offset: %v\n", err)
+		}
+	}
+	fmt.Printf("%%  Message on %s: %s\n",
+		msg.TopicPartition, string(msg.Value))
 }

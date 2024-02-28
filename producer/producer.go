@@ -9,8 +9,9 @@ const (
 
 func configureProducer() (*kafka.Producer, error) {
 	return kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers": BootstrapServers,
-		"acks":              asks,
-		"client.id":         clientID,
+		"bootstrap.servers":  BootstrapServers,
+		"acks":               asks,
+		"client.id":          clientID,
+		"enable.idempotence": "true",
 	})
 }

@@ -35,22 +35,24 @@ func logic(p *kafka.Producer, topic string) <-chan struct{} {
 		timeout := time.After(600 * time.Second)
 		defer ticker.Stop()
 		defer close(done)
+		i := 0
 		for {
 			select {
 			case <-timeout:
 				done <- struct{}{}
 				return
 			case <-ticker.C:
-				fmt.Println("producing")
+				data := fmt.Sprintf("data-%d", i)
 				err := p.Produce(&kafka.Message{
 					TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-					Value:          []byte("FOO"),
+					Value:          []byte(data),
 				}, nil)
 				if err != nil {
 					fmt.Println("produce error", err)
 					done <- struct{}{}
 					return
 				}
+				i++
 			}
 		}
 	}()
@@ -62,8 +64,8 @@ func logic(p *kafka.Producer, topic string) <-chan struct{} {
 				if ev.TopicPartition.Error != nil {
 					fmt.Printf("Failed to deliver message: %v\n", ev.TopicPartition)
 				} else {
-					fmt.Printf("Successfully produced record to topic %s partition [%d] @ offset %v\n",
-						*ev.TopicPartition.Topic, ev.TopicPartition.Partition, ev.TopicPartition.Offset)
+					fmt.Printf("Successfully produced record %s to topic %s partition [%d] @ offset %v\n",
+						ev.Value, *ev.TopicPartition.Topic, ev.TopicPartition.Partition, ev.TopicPartition.Offset)
 				}
 			}
 		}

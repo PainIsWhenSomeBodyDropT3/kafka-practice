@@ -3,7 +3,7 @@ package main
 import "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 
 const (
-	BootstrapServers  = "broker1"
+	BootstrapServers  = "localhost"
 	group             = "group1"
 	ipv4              = "v4"
 	connectionTimeOut = 6000
@@ -19,6 +19,6 @@ func getConsumer() (*kafka.Consumer, error) {
 		// partition if there are no previously committed offsets
 		// for this group.
 		"auto.offset.reset":        "earliest",
-		"enable.auto.offset.store": true,
+		"enable.auto.offset.store": false,
 	})
 }

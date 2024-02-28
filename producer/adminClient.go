@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	BootstrapServers      = "broker1"
+	BootstrapServers      = "localhost"
 	adminOperationTimeout = time.Second * 60
 )
 

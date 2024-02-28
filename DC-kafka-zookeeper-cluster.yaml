@@ -4,8 +4,8 @@ services:
   zoo1:
     image: bitnami/zookeeper:3.9.1
     restart: always
-    ports:
-      - 2181:2181
+    # ports:
+    #   - 2181:2181
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
       - ZOO_SERVER_ID=1
@@ -15,8 +15,8 @@ services:
   zoo2:
     image: bitnami/zookeeper:3.9.1
     restart: always
-    ports:
-      - 2182:2181
+    # ports:
+    #   - 2182:2181
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
       - ZOO_SERVER_ID=2
@@ -26,8 +26,8 @@ services:
   zoo3:
     image: bitnami/zookeeper:3.9.1
     restart: always
-    ports:
-      - 2183:2181
+    # ports:
+    #   - 2183:2181
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
       - ZOO_SERVER_ID=3
