@@ -1,0 +1,95 @@
+version: '3'
+
+services:
+  controller1:
+    image: bitnami/kafka:3.3.2
+    environment:
+      - KAFKA_KRAFT_CLUSTER_ID=q1Sh-9_ISia_zwGINzRvyQ
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=controller
+      - KAFKA_CFG_LISTENERS=CONTROLLER://0.0.0.0:9093
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@controller1:9093,2@controller2:9093,3@controller3:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  controller2:
+    image: bitnami/kafka:3.3.2
+    environment:
+      - KAFKA_KRAFT_CLUSTER_ID=q1Sh-9_ISia_zwGINzRvyQ
+      - KAFKA_CFG_NODE_ID=2
+      - KAFKA_CFG_PROCESS_ROLES=controller
+      - KAFKA_CFG_LISTENERS=CONTROLLER://0.0.0.0:9093
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@controller1:9093,2@controller2:9093,3@controller3:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER        
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  controller3:
+    image: bitnami/kafka:3.3.2
+    environment:
+      - KAFKA_KRAFT_CLUSTER_ID=q1Sh-9_ISia_zwGINzRvyQ
+      - KAFKA_CFG_NODE_ID=3
+      - KAFKA_CFG_PROCESS_ROLES=controller
+      - KAFKA_CFG_LISTENERS=CONTROLLER://0.0.0.0:9093
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@controller1:9093,2@controller2:9093,3@controller3:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  broker1:
+    image: bitnami/kafka:3.3.2
+    ports:
+      - 9092:9092
+    environment:
+      - KAFKA_KRAFT_CLUSTER_ID=q1Sh-9_ISia_zwGINzRvyQ
+      - KAFKA_CFG_NODE_ID=4
+      - KAFKA_CFG_PROCESS_ROLES=broker
+      # - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      # - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://broker1:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@controller1:9093,2@controller2:9093,3@controller3:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  broker2:
+    image: bitnami/kafka:3.3.2
+    ports:
+      - 9093:9092
+    environment:
+      - KAFKA_KRAFT_CLUSTER_ID=q1Sh-9_ISia_zwGINzRvyQ
+      - KAFKA_CFG_NODE_ID=5
+      - KAFKA_CFG_PROCESS_ROLES=broker
+      # - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      # - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://broker2:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@controller1:9093,2@controller2:9093,3@controller3:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  broker3:
+    image: bitnami/kafka:3.3.2
+    ports:
+      - 9094:9092
+    environment:
+      - KAFKA_KRAFT_CLUSTER_ID=q1Sh-9_ISia_zwGINzRvyQ
+      - KAFKA_CFG_NODE_ID=6
+      - KAFKA_CFG_PROCESS_ROLES=broker
+      # - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      # - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://broker3:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@controller1:9093,2@controller2:9093,3@controller3:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  producer:
+    image: producer:1.0
+    hostname: producer
+    depends_on:
+     - broker1
+
+  consumer:
+    image: consumer:1.0
+    hostname: consumer
+    depends_on:
+      - producer
+  # network:
+  #   image: nicolaka/netshoot
+  #   hostname: network
+  #   stdin_open: true
+  #   tty: true
+
